@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en" translate="no">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="robots" content="noindex">
+        <meta name="google" content="notranslate">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#3f51b5">
+        <title lang="ko">&#x1f954; 감시스 (kamsys)</title>
+        <link rel="stylesheet" href="css/vendor/bulmaswatch.min.css">
+        <script src="js/vendor/jquery-1.11.2.min.js"></script>
+    </head>
+
+    <body>
+        <section class="hero is-primary">
+            <div class="hero-body">
+                <p class="title" lang="ko">
+                    &#x1f954; 감시스 (kamsys)
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+
+                <div class="has-text-centered">
+                    <button class="button is-primary" 
+                            onclick="window.location.reload();">
+                        refresh 
+                    </button>
+                </div>
+
+                <div class="box has-text-centered">
+                    <h5 class="title is-5">
+                        &#x1f916; What's going on? 
+                    </h5>
+                    <p class="is-italic">
+                        I'm 
+                        <span id="txt-uptime" class="has-background-light">loading...</span> 
+                        and 
+                    </p>
+                    <p class="is-italic">
+                        <span id="txt-num-photos" class="has-background-light">loading...</span> of 
+                        <span id="txt-max-photos" class="has-background-light">loading...</span> photos are ready to be converted as a video.  
+                    </p>
+                    <progress id="prg-photos" class="progress is-primary" value="1" max="1"></progress>
+                </div>
+
+                <div class="box has-text-centered">
+                    <h5 class="title is-5">
+                        &#x1f4e0; Last uploaded photo 
+                    </h5>
+                    <p>
+                        <span id="txt-photo-modtime" class="has-background-light">loading...</span>
+                    </p>
+                    <figure class="image is-16by9">
+                        <img id="img-latest-photo" src="#">
+                    </figure>
+                </div>
+
+                <div class="box has-text-centered">
+                    <h5 class="title is-5">
+                        &#x1f3a5; Last uploaded video 
+                    </h5>
+                    <p>
+                        <span id="txt-video-modtime" class="has-background-light">loading...</span>
+                    </p>
+                    <figure class="image is-16by9">
+                        <video controls id="vid-latest-video" class="has-ratio" width="270" preload="metadata">
+                            <source id="vidsrc-latest-video" src="#" type="video/mp4">
+                            Sorry, ur ancient browser doesn't support HTML5 video element.  
+                        </video>
+                    </figure>
+                </div>
+
+                <div class="box has-text-centered">
+                    <h5 class="title is-5">
+                        &#x1f5fe; Where are you? 
+                    </h5>
+                    <p class="is-italic">
+                        I'm located in the 82nd building of the Tonda-danchi apartment complex in Takatsuki-shi, Osaka, Japan.  
+                        <a target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/place/%EF%BC%B5%EF%BC%B2%E5%AF%8C%E7%94%B0+%EF%BC%98%EF%BC%92/@34.8213684,135.5980226,17z/data=!4m6!3m5!1s0x60011d425c7152df:0x50504171ec544235!8m2!3d34.8213449!4d135.6025281!16s%2Fg%2F11hhzhj6lr?entry=ttu">You can find the building on Google Maps.</a>  
+                    </p>
+                </div>
+
+                <div class="box has-text-centered">
+                    <h5 class="title is-5">
+                        &#x1f527; Show me your source code. 
+                    </h5>
+                    <p class="is-italic">
+                        <a target="_blank" rel="noopener noreferrer" href="https://github.com/anissatta/kamsys">Sure.</a>  
+                    </p>
+                </div>
+
+                <footer>
+                    <p class="has-text-centered">
+                        &copy; 2023 anissatta 
+                    </p> 
+                </footer>
+
+            </div>
+        </section>
+
+        <script>
+var d = new Date();
+var vid = document.getElementById('vid-latest-video');
+
+/* set sources for img/video elements appending a time so that they won't miss to load their contents. */
+$('#img-latest-photo').attr('src', '../snap-xl.jpg?t=' + d.getTime());
+vid.pause();
+$('#vidsrc-latest-video').attr('src', '../o.mp4?t=' + d.getTime());
+vid.load();
+
+/* fetch metadata.json and set some text elements values taken from it. */
+$.ajax('../metadata.json?t=' + d.getTime(), {
+    type: 'GET', 
+    dataType: 'json', 
+    success: function(data) {
+        $('#txt-uptime').text(data.serverUptime);
+        $('#txt-photo-modtime').text(data.photoLastModification);
+        $('#txt-video-modtime').text(data.videoLastModification);    
+        $('#txt-max-photos').text(data.numberOfPhotosPerVideo);
+        $('#txt-num-photos').text(data.numberOfUnprocessedPhotos);
+        /* progress bar. */
+        $('#prg-photos').attr('max', data.numberOfPhotosPerVideo);
+        $('#prg-photos').attr('value', data.numberOfUnprocessedPhotos);
+    },
+    error: function(xhr, stat, err) {
+        $('#txt-uptime').text('*** error ***');
+        $('#txt-photo-modtime').text('*** error ***');
+        $('#txt-video-modtime').text('*** error ***');
+        $('#txt-max-photos').text('*** error ***');
+        $('#txt-num-photos').text('*** error ***');
+    }
+});
+        </script>
+    </body>
+
+</html>
+
